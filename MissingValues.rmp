@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="9.0.003">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="9.0.003" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="read_csv" compatibility="9.0.003" expanded="true" height="68" name="Read CSV" width="90" x="112" y="34">
+        <parameter key="csv_file" value="G:\Meu Drive\Pessoal\PUC\Classroom\DM - Data Mining BI MASTER S 2018-1\Trabalho\Cavalos\horse.csv"/>
+        <parameter key="column_separators" value=","/>
+        <parameter key="trim_lines" value="false"/>
+        <parameter key="use_quotes" value="true"/>
+        <parameter key="quotes_character" value="&quot;"/>
+        <parameter key="escape_character" value="\"/>
+        <parameter key="skip_comments" value="true"/>
+        <parameter key="comment_characters" value="#"/>
+        <parameter key="starting_row" value="1"/>
+        <parameter key="parse_numbers" value="true"/>
+        <parameter key="decimal_character" value="."/>
+        <parameter key="grouped_digits" value="false"/>
+        <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
+        <parameter key="date_format" value="MMM d, yyyy h:mm:ss a z"/>
+        <parameter key="first_row_as_names" value="true"/>
+        <list key="annotations"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="encoding" value="windows-1252"/>
+        <parameter key="read_all_values_as_polynominal" value="false"/>
+        <list key="data_set_meta_data_information">
+          <parameter key="0" value="surgery.true.polynominal.attribute"/>
+          <parameter key="1" value="age.true.polynominal.attribute"/>
+          <parameter key="2" value="hospital_number.true.integer.attribute"/>
+          <parameter key="3" value="rectal_temp.true.polynominal.attribute"/>
+          <parameter key="4" value="pulse.true.polynominal.attribute"/>
+          <parameter key="5" value="respiratory_rate.true.polynominal.attribute"/>
+          <parameter key="6" value="temp_of_extremities.true.polynominal.attribute"/>
+          <parameter key="7" value="peripheral_pulse.true.polynominal.attribute"/>
+          <parameter key="8" value="mucous_membrane.true.polynominal.attribute"/>
+          <parameter key="9" value="capillary_refill_time.true.polynominal.attribute"/>
+          <parameter key="10" value="pain.true.polynominal.attribute"/>
+          <parameter key="11" value="peristalsis.true.polynominal.attribute"/>
+          <parameter key="12" value="abdominal_distention.true.polynominal.attribute"/>
+          <parameter key="13" value="nasogastric_tube.true.polynominal.attribute"/>
+          <parameter key="14" value="nasogastric_reflux.true.polynominal.attribute"/>
+          <parameter key="15" value="nasogastric_reflux_ph.true.polynominal.attribute"/>
+          <parameter key="16" value="rectal_exam_feces.true.polynominal.attribute"/>
+          <parameter key="17" value="abdomen.true.polynominal.attribute"/>
+          <parameter key="18" value="packed_cell_volume.true.polynominal.attribute"/>
+          <parameter key="19" value="total_protein.true.polynominal.attribute"/>
+          <parameter key="20" value="abdomo_appearance.true.polynominal.attribute"/>
+          <parameter key="21" value="abdomo_protein.true.polynominal.attribute"/>
+          <parameter key="22" value="outcome.true.polynominal.label"/>
+          <parameter key="23" value="surgical_lesion.true.polynominal.attribute"/>
+          <parameter key="24" value="lesion_1.true.integer.attribute"/>
+          <parameter key="25" value="lesion_2.true.integer.attribute"/>
+          <parameter key="26" value="lesion_3.true.integer.attribute"/>
+          <parameter key="27" value="cp_data.true.polynominal.attribute"/>
+        </list>
+        <parameter key="read_not_matching_values_as_missings" value="false"/>
+        <parameter key="datamanagement" value="double_array"/>
+        <parameter key="data_management" value="auto"/>
+      </operator>
+      <operator activated="true" class="declare_missing_value" compatibility="9.0.003" expanded="true" height="82" name="Declare Missing Value" width="90" x="246" y="34">
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="attribute_value"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="time"/>
+        <parameter key="block_type" value="attribute_block"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_matrix_row_start"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="mode" value="nominal"/>
+        <parameter key="nominal_value" value="NA"/>
+        <parameter key="expression_value" value=""/>
+      </operator>
+      <operator activated="true" class="guess_types" compatibility="9.0.003" expanded="true" height="82" name="Guess Types" width="90" x="380" y="34">
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="attribute_value"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="time"/>
+        <parameter key="block_type" value="attribute_block"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_matrix_row_start"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="decimal_point_character" value="."/>
+      </operator>
+      <operator activated="true" class="replace_missing_values" compatibility="9.0.003" expanded="true" height="103" name="Replace Missing Values" width="90" x="514" y="34">
+        <parameter key="return_preprocessing_model" value="false"/>
+        <parameter key="create_view" value="false"/>
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="attribute_value"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="time"/>
+        <parameter key="block_type" value="attribute_block"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_matrix_row_start"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="default" value="average"/>
+        <list key="columns"/>
+      </operator>
+      <connect from_op="Read CSV" from_port="output" to_op="Declare Missing Value" to_port="example set input"/>
+      <connect from_op="Declare Missing Value" from_port="example set output" to_op="Guess Types" to_port="example set input"/>
+      <connect from_op="Guess Types" from_port="example set output" to_op="Replace Missing Values" to_port="example set input"/>
+      <connect from_op="Replace Missing Values" from_port="example set output" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
