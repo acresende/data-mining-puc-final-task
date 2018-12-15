@@ -3,7 +3,7 @@
 
 # # Import Bibliotecas
 
-# In[85]:
+# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -21,7 +21,7 @@ pd.options.display.max_rows = 999
 
 # # Importação base de dados
 
-# In[86]:
+# In[2]:
 
 
 horse = pd.read_csv('horse.csv',sep=',')
@@ -29,13 +29,13 @@ Tipos = horse.dtypes #Mostra os tipos das variáveis
 Estatisticas = horse.describe(include='all') #Mostra estatisticas das variáveis 
 
 
-# In[87]:
+# In[3]:
 
 
 horse
 
 
-# In[88]:
+# In[4]:
 
 
 Estatisticas
@@ -43,7 +43,7 @@ Estatisticas
 
 # # Tratamento Missing Values
 
-# In[89]:
+# In[5]:
 
 
 qtd_nan = [0 for x in range(horse.shape[1])]
@@ -53,7 +53,7 @@ while i < horse.shape[1]:
     i = i+1
 
 
-# In[90]:
+# In[6]:
 
 
 #Alterando MissingValues Numéricos para o valor da média
@@ -67,13 +67,13 @@ while i < horse.shape[1]:
 Estatisticas_new = horse_new.describe(include='all') #Mostra estatisticas das variáveis
 
 
-# In[91]:
+# In[7]:
 
 
 horse_new.dtypes
 
 
-# In[92]:
+# In[8]:
 
 
 Estatisticas_new
@@ -83,7 +83,7 @@ Estatisticas_new
 
 # ### Apenas mudando o tipo da variável para numerico
 
-# In[93]:
+# In[9]:
 
 
 #http://pbpython.com/categorical-encoding.html Approach #2
@@ -96,13 +96,13 @@ while i < horse.shape[1]:
 Estatisticas_new = horse_new.describe(include='all') #Mostra estatisticas das variáveis
 
 
-# In[94]:
+# In[10]:
 
 
 Estatisticas_new
 
 
-# In[95]:
+# In[11]:
 
 
 horse_new.dtypes
@@ -110,7 +110,7 @@ horse_new.dtypes
 
 # ### Utilizando o metodo de dumies e retirando a coluna de "outcome"
 
-# In[96]:
+# In[12]:
 
 
 #http://pbpython.com/categorical-encoding.html Approach #3
@@ -121,40 +121,15 @@ Estatisticas_dummies = horse_dummies.describe(include='all')
 horse_dummies = pd.concat((horse_dummies,horse_new.outcome), axis = 1)
 
 
-# In[97]:
+# In[13]:
 
 
 print(horse_dummies.dtypes)
 
 
-# ### Categorizando com Números
-
-# In[98]:
-
-
-#categorizando com numeros
-horse_cat = horse_new.drop('outcome', axis = 1)
-cols = horse_cat.columns[horse_cat.dtypes.eq("category")]
-for coluna in cols:
-    horse_cat[coluna] = pd.factorize(horse_cat[coluna])[0]
-horse_cat = pd.concat((horse_cat,horse_new.outcome), axis = 1)
-
-
-# In[99]:
-
-
-horse_cat
-
-
-# In[100]:
-
-
-horse_cat.dtypes
-
-
 # # Arrumando base de teste
 
-# In[101]:
+# In[14]:
 
 
 horseTest = pd.read_csv('horseTest.csv',sep=',')
@@ -181,56 +156,35 @@ horseTest_dummies = pd.get_dummies(horseTest_dummies, columns=list(cols))
 EstatisticasTest_dummies = horseTest_dummies.describe(include='all') 
 horseTest_dummies = pd.concat((horseTest_dummies,horseTest.outcome), axis = 1)
 
-#categorizando com numeros
-horseTest_cat = horseTest.drop('outcome', axis = 1)
-cols = horseTest_cat.columns[horseTest_cat.dtypes.eq("category")]
-for coluna in cols:
-    horseTest_cat[coluna] = pd.factorize(horseTest_cat[coluna])[0]
-horseTest_cat = pd.concat((horseTest_cat,horseTest.outcome), axis = 1)
 
-
-# In[102]:
+# In[15]:
 
 
 EstatisticasTest_dummies
 
 
-# In[103]:
+# In[16]:
 
 
 horseTest_dummies.dtypes
 
 
-# In[104]:
-
-
-horseTest_cat
-
-
-# In[105]:
-
-
-horseTest_cat.dtypes
-
-
 # # KNN
 
-# ### horse_dummies
-
-# In[106]:
+# In[17]:
 
 
 x_train, x_test, y_train, y_test = train_test_split(horse_dummies.drop('outcome', axis = 1), horse_dummies['outcome'], random_state = 0)
 
 
-# In[107]:
+# In[18]:
 
 
 print(x_train.shape)
 print(x_test.shape)
 
 
-# In[108]:
+# In[19]:
 
 
 tamanho = 100
@@ -248,82 +202,28 @@ for i in range(1,tamanho):
         
 
 
-# In[109]:
+# In[20]:
 
 
 print(maior_knn, pos)
 
 
-# In[110]:
+# In[21]:
 
 
 knn = KNeighborsClassifier(n_neighbors = pos)
 knn.fit(x_train, y_train)
 
 
-# In[111]:
+# In[22]:
 
 
 knn.score(horseTest_dummies.drop('outcome', axis = 1), horseTest_dummies.outcome)
 
 
-# ### horse_cat
-
-# In[112]:
-
-
-x_train, x_test, y_train, y_test = train_test_split(horse_cat.drop('outcome', axis = 1), horse_cat['outcome'], random_state = 0)
-
-
-# In[113]:
-
-
-print(x_train.shape)
-print(x_test.shape)
-
-
-# In[114]:
-
-
-tamanho = 100
-maior_knn = 0
-pos = 0
-vet =[]
-for i in range(1,tamanho):
-    knn = KNeighborsClassifier(n_neighbors = i)
-    knn.fit(x_train, y_train)
-    result = knn.score(x_test, y_test)
-    vet.append(result)
-    if result > maior_knn:
-        maior_knn = result
-        pos = i
-        
-
-
-# In[115]:
-
-
-print(maior_knn, pos)
-
-
-# In[116]:
-
-
-knn = KNeighborsClassifier(n_neighbors = pos)
-knn.fit(x_train, y_train)
-
-
-# In[117]:
-
-
-knn.score(horseTest_cat.drop('outcome', axis = 1), horseTest_cat.outcome)
-
-
 # # Adicionando Logistic Regression
 
-# ### horse_dummies
-
-# In[118]:
+# In[23]:
 
 
 result_lr = 0
@@ -344,7 +244,7 @@ for j in range(1,len(horse_dummies)):
 
     dataset_after_rfe = dataset[dataset.columns[col]]
     
-    x_train, x_test, y_train, y_test = train_test_split(dataset_after_rfe, dataset['outcome'], random_state = 5)
+    x_train, x_test, y_train, y_test = train_test_split(dataset_after_rfe, dataset['outcome'], random_state = 0)
     
     tamanho = 100
     maior_knn = 0
@@ -373,13 +273,13 @@ for j in range(1,len(horse_dummies)):
         
 
 
-# In[119]:
+# In[24]:
 
 
 print(result_lr, melhor_qty)
 
 
-# In[120]:
+# In[25]:
 
 
 model = LogisticRegression()
@@ -397,32 +297,32 @@ for i in range(0,rfe.support_.size):
 dataset_after_rfe = dataset[dataset.columns[col]]
 
 
-# In[121]:
+# In[26]:
 
 
 dataset[dataset.columns[col]].columns
 
 
-# In[122]:
+# In[27]:
 
 
 dataset_after_rfe.dtypes
 
 
-# In[123]:
+# In[28]:
 
 
 x_train, x_test, y_train, y_test = train_test_split(dataset_after_rfe, dataset['outcome'], random_state = 0)
 
 
-# In[124]:
+# In[29]:
 
 
 print(x_train.shape)
 print(x_test.shape)
 
 
-# In[125]:
+# In[30]:
 
 
 tamanho = 100
@@ -440,165 +340,27 @@ for i in range(1,tamanho):
         
 
 
-# In[126]:
+# In[31]:
 
 
 print(maior_knn, pos)
 
 
-# In[127]:
+# In[32]:
 
 
 knn = KNeighborsClassifier(n_neighbors = pos)
 knn.fit(x_train, y_train)
 
 
-# In[128]:
+# In[33]:
 
 
 TESTE = horseTest_dummies[list(dataset[dataset.columns[col]].columns)]
 
 
-# In[129]:
+# In[34]:
 
 
 knn.score(TESTE, horseTest_dummies.outcome)
-
-
-# ### horse_cat
-
-# In[130]:
-
-
-result_lr = 0
-melhor_qty = 0
-resultados = []
-
-for j in range(1,len(horse_cat)):
-    model = LogisticRegression()
-    feature_qty = j
-    dataset = horse_cat
-    rfe = RFE(model, feature_qty)
-    rfe = rfe.fit(dataset.drop('outcome', axis = 1), dataset.outcome.values)
-
-    col = []
-    for i in range(0,rfe.support_.size):
-        if rfe.support_[i] == True:
-            col.append(i)
-
-    dataset_after_rfe = dataset[dataset.columns[col]]
-    
-    x_train, x_test, y_train, y_test = train_test_split(dataset_after_rfe, dataset['outcome'], random_state = 5)
-    
-    tamanho = 100
-    maior_knn = 0
-    pos = 0
-    vet =[]
-    for i in range(1,tamanho):
-        knn = KNeighborsClassifier(n_neighbors = i)
-        knn.fit(x_train, y_train)
-        result = knn.score(x_test, y_test)
-        vet.append(result)
-        if result > maior_knn:
-            maior_knn = result
-            pos = i
-    
-    knn = KNeighborsClassifier(n_neighbors = pos)
-    knn.fit(x_train, y_train)
-    
-    TESTE = horseTest_cat[list(dataset[dataset.columns[col]].columns)]
-    
-    h = knn.score(TESTE, horseTest_cat.outcome)
-    resultados.append(h)
-    if h > result_lr:
-        result_lr = h
-        melhor_qty = j
-        
-        
-
-
-# In[131]:
-
-
-print(result_lr, melhor_qty)
-
-
-# In[132]:
-
-
-model = LogisticRegression()
-#Selecao de 10 atributos
-feature_qty = melhor_qty
-dataset = horse_cat
-rfe = RFE(model, feature_qty)
-rfe = rfe.fit(dataset.drop('outcome', axis = 1), dataset.outcome.values)
-
-col = []
-for i in range(0,rfe.support_.size):
-    if rfe.support_[i] == True:
-        col.append(i)
-
-dataset_after_rfe = dataset[dataset.columns[col]]
-
-
-# In[133]:
-
-
-dataset_after_rfe.dtypes
-
-
-# In[134]:
-
-
-x_train, x_test, y_train, y_test = train_test_split(dataset_after_rfe, dataset['outcome'], random_state = 0)
-
-
-# In[135]:
-
-
-print(x_train.shape)
-print(x_test.shape)
-
-
-# In[136]:
-
-
-tamanho = 100
-maior_knn = 0
-pos = 0
-vet =[]
-for i in range(1,tamanho):
-    knn = KNeighborsClassifier(n_neighbors = i)
-    knn.fit(x_train, y_train)
-    result = knn.score(x_test, y_test)
-    vet.append(result)
-    if result > maior_knn:
-        maior_knn = result
-        pos = i
-        
-
-
-# In[137]:
-
-
-print(maior_knn, pos)
-
-
-# In[138]:
-
-
-knn = KNeighborsClassifier(n_neighbors = pos)
-knn.fit(x_train, y_train)
-
-
-# In[139]:
-
-
-TESTE = horseTest_cat[list(dataset[dataset.columns[col]].columns)]
-
-
-# In[140]:
-
-
-knn.score(TESTE, horseTest_cat.outcome)
 
