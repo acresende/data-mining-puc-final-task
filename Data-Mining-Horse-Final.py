@@ -1,7 +1,9 @@
 
 # coding: utf-8
 
-# In[2]:
+# # --------------------------- Bibliotecas Utilizadas ---------------------------
+
+# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -20,39 +22,80 @@ import numpy as np
 pd.options.display.max_rows = 999
 
 
-# In[3]:
+# # --------------------------- Read Files ---------------------------
+
+# In[2]:
 
 
 # Load in the data with `read_csv()`
-horsesDataSet = pd.read_csv("horse.csv", header=0, delimiter=',')
+horsesDataSet = pd.read_csv('horse.csv', header=0, delimiter=',')
 
 horsesDataSetTest = pd.read_csv("horseTest.csv", header=0, delimiter=',')
 
-
-
 #description of dataSet
-descriptionHorsesDataSet = horsesDataSet.describe()
+descriptionHorsesDataSet = horsesDataSet.describe(include='all')
+descriptionHorsesDataSetTest = horsesDataSetTest.describe(include='all')
 
-# --------------------------- Exploratory analysis ---------------------------
+
+# In[3]:
+
+
+print('Base de Trieno (Arquivo horse.csv)\n')
+descriptionHorsesDataSet
+
+
+# In[4]:
+
+
+print('\nBase de Teste (Arquivo horseTest.csv)\n')
+descriptionHorsesDataSetTest
+
+
+# # --------------------------- Exploratory analysis ---------------------------
+
+# In[5]:
+
 
 #first 5 and last 5 entries in dataSet
 firstRowsDataSet = horsesDataSet.head(5)
-
 lastRowsDataSet = horsesDataSet.tail(5)
 
-# sampling data
 
+# In[6]:
+
+
+firstRowsDataSet
+
+
+# In[7]:
+
+
+lastRowsDataSet
+
+
+# In[8]:
+
+
+# sampling data
 # Take a sample of 5
 horsesDataSetSample = horsesDataSet.sample(5)
+horsesDataSetSample
 
+
+# In[9]:
+
+
+#Nulls
 result = pd.isnull(horsesDataSet)
+result
 
 
-# --------------------------- Pre processing ---------------------------
+# # --------------------------- Pre processing ---------------------------
+
+# In[10]:
 
 
 # iterate through each attribute and define the percentage of missing values
-
 # populate array with zeros with column dimensions of dataset
 qtd_nan = [0 for x in range(horsesDataSet.shape[1])]
 
@@ -70,8 +113,14 @@ while i < horsesDataSet.shape[1]:
     qtd_nan[i] = horsesDataSet.loc[attributeLinesIsNA, currentAttributeLabel].shape[0]
     qtd_total[i] = horsesDataSet.loc[:, currentAttributeLabel].shape[0]
     i = i+1
-
+    
 percentageArray = np.divide(qtd_nan, qtd_total)
+
+
+# In[11]:
+
+
+# dropping atributes
 threshold = 0.5
 PreProcessedHorseDataSet = horsesDataSet
 PreProcessedHorseDataSetTest = horsesDataSetTest
@@ -89,13 +138,16 @@ while i < horsesDataSet.shape[1]:
         
     i = i + 1
 
-# fill remaining lines with mean values
+
+# In[12]:
+
+
+# fill remaining lines with mean values (only numerical)
 PreProcessedHorseDataSet = PreProcessedHorseDataSet.fillna(horsesDataSet.mean())
-PreProcessedHorseDataSetTest = PreProcessedHorseDataSetTest.fillna(horsesDataSetTest.mean())
+#PreProcessedHorseDataSetTest = PreProcessedHorseDataSetTest.fillna(horsesDataSetTest.mean())
 
 # Show Statistics of DataSet
 StatisticsPreProcessedHorseDataSet = PreProcessedHorseDataSet.describe(include='all')
-
 
 # Altering Categorical missing values to Mode Value (value that appear the most often)
 i = 0
@@ -107,74 +159,61 @@ while i < PreProcessedHorseDataSet.shape[1]:
     i = i+1
     
 # Altering Categorical missing values to Mode Value (value that appear the most often) [DATASET TEST]
-i = 0
-while i < PreProcessedHorseDataSetTest.shape[1]:
+#i = 0
+#while i < PreProcessedHorseDataSetTest.shape[1]:
     # return the most frequent value (first index because mode() returns a DataFrame)
-    attributeMode = PreProcessedHorseDataSetTest.mode().iloc[0, i]
-    currentAttributeLabel = list(PreProcessedHorseDataSetTest)[i]
-    PreProcessedHorseDataSetTest[currentAttributeLabel] = PreProcessedHorseDataSetTest[currentAttributeLabel].fillna(attributeMode)
-    i = i+1
+#    attributeMode = PreProcessedHorseDataSetTest.mode().iloc[0, i]
+#    currentAttributeLabel = list(PreProcessedHorseDataSetTest)[i]
+#    PreProcessedHorseDataSetTest[currentAttributeLabel] = PreProcessedHorseDataSetTest[currentAttributeLabel].fillna(attributeMode)
+#    i = i+1
+
+
+# In[13]:
+
 
 # categorical attribute binarization
-
 categoricalHorseDataSet = PreProcessedHorseDataSet.select_dtypes(include='object')
 categoricalHorseDataSet = categoricalHorseDataSet.drop('outcome', axis=1)
 categoricalHorseDataSetDummy = pd.get_dummies(categoricalHorseDataSet)
 PreProcessedHorseDataSet = pd.concat([categoricalHorseDataSetDummy, PreProcessedHorseDataSet.loc[:, 'outcome']], axis=1)
 
-
 # categorical attribute binarization [DATASET TEST]
-
 categoricalHorseDataSetTest = PreProcessedHorseDataSetTest.select_dtypes(include='object')
 categoricalHorseDataSetTest = categoricalHorseDataSetTest.drop('outcome', axis=1)
 categoricalHorseDataSetDummy = pd.get_dummies(categoricalHorseDataSetTest)
 PreProcessedHorseDataSetTest = pd.concat([categoricalHorseDataSetDummy, PreProcessedHorseDataSetTest.loc[:, 'outcome']], axis=1)
 
+
+# In[14]:
+
+
 # Change values from euthanized to died
 AttributesHorseDataSet = PreProcessedHorseDataSet.drop('outcome', axis=1)
-
 TargetHorseDataSet = PreProcessedHorseDataSet.loc[:, 'outcome']
 
 # mapping 'euthanized' values to 'died' to tune fitting
 TargetHorseDataSet = TargetHorseDataSet.map(lambda x: 'died' if x == 'euthanized' else x)
 
-
 PreProcessedHorseDataSet = pd.concat([AttributesHorseDataSet, TargetHorseDataSet], axis=1)
 
 # Change values from euthanized to died [DATASET TEST]
-
 AttributesHorseDataSetTest = PreProcessedHorseDataSetTest.drop('outcome', axis=1)
-
 TargetHorseDataSetTest = PreProcessedHorseDataSetTest.loc[:, 'outcome']
 
 # mapping 'euthanized' values to 'died' to tune fitting
 TargetHorseDataSetTest = TargetHorseDataSetTest.map(lambda x: 'died' if x == 'euthanized' else x)
-
 PreProcessedHorseDataSetTest = pd.concat([AttributesHorseDataSetTest, TargetHorseDataSetTest], axis=1)
 
 
-# In[4]:
-
-
-PreProcessedHorseDataSetTest
-
-
-# In[5]:
+# In[15]:
 
 
 # Convertendo objetos para categóricos
-
-
-# In[6]:
-
-
-
 i= 0
 while i < PreProcessedHorseDataSet.shape[1]:
     if PreProcessedHorseDataSet[list(PreProcessedHorseDataSet)[i]].dtypes == 'O': 
         PreProcessedHorseDataSet[list(PreProcessedHorseDataSet)[i]] = PreProcessedHorseDataSet[list(PreProcessedHorseDataSet)[i]].astype('category')
     i = i+1
-
 
 i= 0
 while i < PreProcessedHorseDataSetTest.shape[1]:
@@ -183,20 +222,31 @@ while i < PreProcessedHorseDataSetTest.shape[1]:
     i = i+1
 
 
-# In[7]:
+# In[16]:
+
+
+print('\nBase de treino já preparada para utilizar os modelos\n')
+PreProcessedHorseDataSet
+
+
+# In[17]:
+
+
+print('\nBase de teste já preparada para testar os modelos\n')
+PreProcessedHorseDataSetTest
+
+
+# # --------------------------- Applying Models ---------------------------
+
+# ### KNN 
+
+# In[18]:
 
 
 x_train, x_test, y_train, y_test = train_test_split(PreProcessedHorseDataSet.drop('outcome', axis = 1), PreProcessedHorseDataSet['outcome'], random_state = 0)
 
 
-# In[8]:
-
-
-# KNN SEM REGRESSÃO LOGÍSTICA
-
-
-# In[9]:
-
+# In[19]:
 
 
 tamanho = 100
@@ -215,26 +265,26 @@ for i in range(1,tamanho):
         TargetHorseDataSet_test = y_test
 
 
-# In[10]:
+# In[20]:
 
 
 knn = KNeighborsClassifier(n_neighbors = pos)
 knn.fit(x_train, y_train)
 
 
-# In[11]:
+# In[21]:
 
 
 knn.score(PreProcessedHorseDataSetTest.drop('outcome', axis = 1), PreProcessedHorseDataSetTest.outcome)
 
 
-# In[12]:
+# In[22]:
 
 
 TargetHorseDataSet_prediction
 
 
-# In[13]:
+# In[23]:
 
 
 # generate metrics
@@ -258,13 +308,9 @@ confusionMatrix = pd.DataFrame(
 print(confusionMatrix)
 
 
-# In[14]:
+# ### KNN COM REGRESSÃO LOGÍSTICA
 
-
-# KNN COM REGRESSÃO LOGÍSTICA
-
-
-# In[ ]:
+# In[24]:
 
 
 result_lr = 0
@@ -316,19 +362,19 @@ for j in range(1,len(PreProcessedHorseDataSet)):
         
 
 
-# In[ ]:
+# In[25]:
 
 
 print(result_lr, melhor_qty)
 
 
-# In[ ]:
+# In[26]:
 
 
 TargetHorseDataSet_prediction
 
 
-# In[ ]:
+# In[27]:
 
 
 # generate metrics
@@ -349,16 +395,12 @@ confusionMatrix = pd.DataFrame(
     index=['True Died', 'True Lived']
 )
 
-confusionMatrix
+print(confusionMatrix)
 
 
-# In[ ]:
+# ### DECISION TREE
 
-
-# DECISION TREE
-
-
-# In[ ]:
+# In[28]:
 
 
 # label encoder
@@ -380,11 +422,18 @@ decisionTreeModel.fit(AttributesHorseDataSet_train, TargetHorseDataSet_train)
 TargetHorseDataSet_prediction = decisionTreeModel.predict(AttributesHorseDataSet_test)
 
 
-# In[ ]:
+# In[29]:
+
+
+TargetHorseDataSet_test = labelEncoder.inverse_transform(TargetHorseDataSet_test)
+TargetHorseDataSet_prediction = labelEncoder.inverse_transform(TargetHorseDataSet_prediction)
+TargetHorseDataSet_prediction
+
+
+# In[30]:
 
 
 # generate metrics
-
 accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
 print(accuracyScore)
 recallScore = metrics.recall_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction, average=None)
@@ -392,24 +441,17 @@ print(recallScore)
 kappaScore = metrics.cohen_kappa_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
 print(kappaScore)
 
-#TargetHorseDataSet_test = labelEncoder.inverse_transform(TargetHorseDataSet_test)
-#TargetHorseDataSet_prediction = labelEncoder.inverse_transform(TargetHorseDataSet_prediction)
-
 confusionMatrix = pd.DataFrame(
     metrics.confusion_matrix(TargetHorseDataSet_test, TargetHorseDataSet_prediction),
     columns=['Predicted Lived', 'Predicted Died'],
     index=['True Lived', 'True Died']
 )
-confusionMatrix
+print(confusionMatrix)
 
 
-# In[ ]:
+# ### DECISION TREE COM REGRESSÃO LOGÍSTICA
 
-
-# DECISION TREE COM REGRESSÃO LOGÍSTICA
-
-
-# In[ ]:
+# In[31]:
 
 
 result_lr = 0
@@ -429,8 +471,6 @@ for j in range(1,len(PreProcessedHorseDataSet)):
             col.append(i)
 
     dataset_after_rfe = dataset[dataset.columns[col]]
-    
-    
     
     # label encoder
     labelEncoder = preprocessing.LabelEncoder()
@@ -460,7 +500,15 @@ for j in range(1,len(PreProcessedHorseDataSet)):
         TargetHorseDataSet_test_Store = TargetHorseDataSet_test
 
 
-# In[ ]:
+# In[32]:
+
+
+TargetHorseDataSet_test = labelEncoder.inverse_transform(TargetHorseDataSet_test)
+TargetHorseDataSet_prediction = labelEncoder.inverse_transform(TargetHorseDataSet_prediction)
+TargetHorseDataSet_prediction
+
+
+# In[33]:
 
 
 accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store)
@@ -479,5 +527,5 @@ confusionMatrix = pd.DataFrame(
     index=['True Died', 'True Lived']
 )
 
-confusionMatrix
+print(confusionMatrix)
 
