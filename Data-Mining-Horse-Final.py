@@ -157,11 +157,23 @@ while i < PreProcessedHorseDataSet.shape[1]:
     currentAttributeLabel = list(PreProcessedHorseDataSet)[i]
     PreProcessedHorseDataSet[currentAttributeLabel] = PreProcessedHorseDataSet[currentAttributeLabel].fillna(attributeMode)
     i = i+1
+
+# Altering missing values [DATASET TEST]
+#Saving values from train to insret in TEST with variable v
+v = [0 for x in range(horsesDataSet.shape[1])]
+i=0
+while i < PreProcessedHorseDataSet.shape[1]:
+    if PreProcessedHorseDataSet.dtypes[i] == 'O':
+        v[i] = PreProcessedHorseDataSet.mode().iloc[0, i]
+    else:
+        v[i] = PreProcessedHorseDataSet.iloc[0, i].mean()
     
-# Altering Categorical missing values to Mode Value (value that appear the most often) [DATASET TEST]
+    currentAttributeLabel = list(PreProcessedHorseDataSetTest)[i]
+    PreProcessedHorseDataSetTest[currentAttributeLabel] = PreProcessedHorseDataSetTest[currentAttributeLabel].fillna(v[i])
+    i = i+1
+
 #i = 0
 #while i < PreProcessedHorseDataSetTest.shape[1]:
-    # return the most frequent value (first index because mode() returns a DataFrame)
 #    attributeMode = PreProcessedHorseDataSetTest.mode().iloc[0, i]
 #    currentAttributeLabel = list(PreProcessedHorseDataSetTest)[i]
 #    PreProcessedHorseDataSetTest[currentAttributeLabel] = PreProcessedHorseDataSetTest[currentAttributeLabel].fillna(attributeMode)
