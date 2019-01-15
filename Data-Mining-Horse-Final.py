@@ -12,11 +12,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 from sklearn import tree
+from sklearn.svm import SVC
 
 import sklearn.metrics as metrics
 import sklearn.preprocessing as preprocessing
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 
 pd.options.display.max_rows = 999
@@ -302,9 +302,12 @@ TargetHorseDataSet_prediction
 # generate metrics
 
 accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
+print('Accuracy Score:')
 print(accuracyScore)
 recallScore = metrics.recall_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction, average=None)
+print('Recall Score:')
 print(recallScore)
+print('Cohen''s Kappa Score:')
 kappaScore = metrics.cohen_kappa_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
 print(kappaScore)
 
@@ -329,7 +332,7 @@ result_lr = 0
 melhor_qty = 0
 resultados = []
 
-for j in range(1,len(PreProcessedHorseDataSet)):
+for j in range(1,PreProcessedHorseDataSet.shape[1]):
     model = LogisticRegression()
     feature_qty = j
     dataset = PreProcessedHorseDataSet
@@ -392,10 +395,13 @@ TargetHorseDataSet_prediction
 # generate metrics
 
 accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
+print('Accuracy Score:')
 print(accuracyScore)
 recallScore = metrics.recall_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction, average=None)
+print('Recall Score:')
 print(recallScore)
 kappaScore = metrics.cohen_kappa_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
+print('Cohen''s Kappa Score:')
 print(kappaScore)
 
 #TargetHorseDataSet_test = labelEncoder.inverse_transform(TargetHorseDataSet_test)
@@ -447,10 +453,13 @@ TargetHorseDataSet_prediction
 
 # generate metrics
 accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
+print('Accuracy Score:')
 print(accuracyScore)
 recallScore = metrics.recall_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction, average=None)
+print('Recall Score:')
 print(recallScore)
 kappaScore = metrics.cohen_kappa_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
+print('Cohen''s Kappa Score:')
 print(kappaScore)
 
 confusionMatrix = pd.DataFrame(
@@ -470,7 +479,7 @@ result_lr = 0
 melhor_qty = 0
 resultados = []
 
-for j in range(1,len(PreProcessedHorseDataSet)):
+for j in range(1,PreProcessedHorseDataSet.shape[1]):
     model = LogisticRegression()
     feature_qty = j
     dataset = PreProcessedHorseDataSet
@@ -524,14 +533,123 @@ TargetHorseDataSet_prediction
 
 
 accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store)
+print('Accuracy Score:')
 print(accuracyScore)
 recallScore = metrics.recall_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store, average=None)
+print('Recall Score:')
 print(recallScore)
+print('Cohen''s Kappa Score:')
 kappaScore = metrics.cohen_kappa_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store)
 print(kappaScore)
 
 #TargetHorseDataSet_test = labelEncoder.inverse_transform(TargetHorseDataSet_test)
 #TargetHorseDataSet_prediction = labelEncoder.inverse_transform(TargetHorseDataSet_prediction)
+
+confusionMatrix = pd.DataFrame(
+    metrics.confusion_matrix(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store),
+    columns=['Predicted Died', 'Predicted Lived'],
+    index=['True Died', 'True Lived']
+)
+
+print(confusionMatrix)
+
+
+# # SVM
+
+# In[34]:
+
+
+# split train and test data and target
+AttributesHorseDataSet_train, AttributesHorseDataSet_test, TargetHorseDataSet_train, TargetHorseDataSet_test = train_test_split(AttributesHorseDataSet, TargetHorseEncodedDataSet, random_state=1)
+
+svmClassifier = SVC(kernel='linear', C = 1.0)
+svmClassifier.fit(AttributesHorseDataSet_train, TargetHorseDataSet_train)
+
+TargetHorseDataSet_prediction = svmClassifier.predict(AttributesHorseDataSet_test)
+
+TargetHorseDataSet_prediction_Store = decisionTreeModel.predict(AttributesHorseDataSet_test)
+TargetHorseDataSet_test_Store = TargetHorseDataSet_test
+
+
+# In[35]:
+
+
+# -------------- Metrics ----------------
+
+accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store)
+print('Accuracy Score:')
+print(accuracyScore)
+recallScore = metrics.recall_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store, average=None)
+print('Recall Score:')
+print(recallScore)
+print('Cohen''s Kappa Score:')
+kappaScore = metrics.cohen_kappa_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store)
+print(kappaScore)
+
+#TargetHorseDataSet_test = labelEncoder.inverse_transform(TargetHorseDataSet_test)
+#TargetHorseDataSet_prediction = labelEncoder.inverse_transform(TargetHorseDataSet_prediction)
+
+confusionMatrix = pd.DataFrame(
+    metrics.confusion_matrix(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store),
+    columns=['Predicted Died', 'Predicted Lived'],
+    index=['True Died', 'True Lived']
+)
+
+print(confusionMatrix)
+
+
+# # SVM com LR
+
+# In[36]:
+
+
+result_lr = 0
+melhor_qty = 0
+resultados = []
+
+for j in range(1,PreProcessedHorseDataSet.shape[1]):
+    model = LogisticRegression()
+    feature_qty = j
+    dataset = PreProcessedHorseDataSet
+    rfe = RFE(model, feature_qty)
+    rfe = rfe.fit(dataset.drop('outcome', axis = 1), dataset.outcome.values)
+
+    col = []
+    for i in range(0,rfe.support_.size):
+        if rfe.support_[i] == True:
+            col.append(i)
+
+    dataset_after_rfe = dataset[dataset.columns[col]]
+    
+    # split train and test data and target
+    AttributesHorseDataSet_train, AttributesHorseDataSet_test, TargetHorseDataSet_train, TargetHorseDataSet_test = train_test_split(AttributesHorseDataSet, TargetHorseEncodedDataSet, random_state=1)
+
+    svmClassifier = SVC(kernel='linear', C = 1.0)
+    svmClassifier.fit(AttributesHorseDataSet_train, TargetHorseDataSet_train)
+
+    TargetHorseDataSet_prediction = svmClassifier.predict(AttributesHorseDataSet_test)
+    
+    accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test, TargetHorseDataSet_prediction)
+    
+    if accuracyScore > result_lr:
+        result_lr = accuracyScore
+        melhor_qty = j
+        TargetHorseDataSet_prediction_Store = svmClassifier.predict(AttributesHorseDataSet_test)
+        TargetHorseDataSet_test_Store = TargetHorseDataSet_test
+
+
+# In[37]:
+
+
+accuracyScore = metrics.accuracy_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store)
+print('Accuracy Score:')
+print(accuracyScore)
+recallScore = metrics.recall_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store, average=None)
+print('Recall Score:')
+print(recallScore)
+print('Cohen''s Kappa Score:')
+kappaScore = metrics.cohen_kappa_score(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store)
+print(kappaScore)
 
 confusionMatrix = pd.DataFrame(
     metrics.confusion_matrix(TargetHorseDataSet_test_Store, TargetHorseDataSet_prediction_Store),
